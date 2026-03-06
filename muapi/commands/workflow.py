@@ -680,7 +680,11 @@ def _extract_output_urls(data: dict) -> list[str]:
         if isinstance(item, str):
             urls.append(item)
         elif isinstance(item, dict):
-            urls.extend(item.get("outputs") or [])
+            # Handle both formats: {"outputs": [...]} and {"value": "url"}
+            if item.get("outputs"):
+                urls.extend(item["outputs"])
+            elif item.get("value"):
+                urls.append(item["value"])
     return urls
 
 
