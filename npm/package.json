@@ -1,7 +1,7 @@
 {
   "name": "muapi-cli",
-  "version": "0.2.3",
-  "description": "Official CLI for muapi.ai \u2014 generate images, videos, and audio from your terminal",
+  "version": "0.2.4",
+  "description": "Official CLI for muapi.ai — generate images, videos, and audio from your terminal",
   "keywords": [
     "muapi",
     "ai",
@@ -26,11 +26,6 @@
   },
   "files": [
     "bin/muapi",
-    "bin/muapi-darwin-arm64",
-    "bin/muapi-darwin-x86_64",
-    "bin/muapi-linux-x86_64",
-    "bin/muapi-linux-arm64",
-    "bin/muapi-windows-x86_64.exe",
     "scripts/install.js"
   ],
   "engines": {
