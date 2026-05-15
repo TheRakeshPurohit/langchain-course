@@ -5,8 +5,9 @@ import typer
 from rich import print as rprint
 
 from . import __version__
-from .commands import auth, account, audio, config_cmd, docs, edit, enhance, image, keys, models, predict, upload, video, workflow
+from .commands import auth, account, audio, config_cmd, docs, edit, enhance, image, keys, models, predict, run, upload, video, workflow
 from .commands import mcp_server
+from .dynamic_help import maybe_handle_run_help
 
 app = typer.Typer(
     name="muapi",
@@ -14,6 +15,7 @@ app = typer.Typer(
     add_completion=True,
     rich_markup_mode="rich",
     no_args_is_help=True,
+    context_settings={"help_option_names": ["-h", "--help"]},
 )
 
 # ── Subcommand groups ──────────────────────────────────────────────────────────
@@ -27,6 +29,14 @@ app.add_typer(audio.app,       name="audio",   help="Create or remix music and a
 app.add_typer(enhance.app,     name="enhance", help="Enhance images (upscale, bg-remove, face-swap…).")
 app.add_typer(edit.app,        name="edit",    help="Edit videos (effects, lipsync, dance, dress…).")
 app.add_typer(predict.app,     name="predict", help="Check or wait for async prediction results.")
+
+# `run` is a single top-level command, not a group, so its positional MODEL
+# argument doesn't collide with subcommand routing.
+app.command(
+    "run",
+    help="Run any model by endpoint name (schema-driven; try `muapi run <model> -h`).",
+    context_settings={"help_option_names": ["-h", "--help"]},
+)(run.run)
 app.add_typer(upload.app,      name="upload",  help="Upload local files to get a hosted URL.")
 app.add_typer(models.app,      name="models",  help="Discover all available models.")
 app.add_typer(workflow.app,    name="workflow", help="Build, run, and visualize multi-step AI workflows.")
@@ -74,5 +84,15 @@ def main(
         rprint(ctx.get_help())
 
 
-if __name__ == "__main__":
+def _entrypoint() -> None:
+    # Intercept `muapi run <model> -h` so we can print model-specific
+    # input help from the live OpenAPI schema. Falls through to Typer
+    # on any failure (network down, unknown model, missing schema).
+    import sys
+    if maybe_handle_run_help(sys.argv[1:]):
+        return
     app()
+
+
+if __name__ == "__main__":
+    _entrypoint()

@@ -28,10 +28,15 @@ muapi auth login --email you@example.com --password "..."
 # Or paste an existing API key
 muapi auth configure --api-key "YOUR_KEY"
 
-# Generate
+# Generate — pick a curated verb…
 muapi image generate "a cyberpunk city at night" --model flux-dev
 muapi video generate "a dog running on a beach" --model kling-master
 muapi audio create "upbeat lo-fi hip hop for studying"
+
+# …or run any model by endpoint name (schema-driven, covers the whole catalog)
+muapi run flux-dev-image -p "a cyberpunk city at night"
+muapi run seedance-2-text-to-video -p "drone shot over snowy peaks" -i duration=5
+muapi run <model> -h          # introspects the live OpenAPI schema
 
 # Check balance
 muapi account balance
@@ -116,6 +121,33 @@ muapi predict wait <request_id>
 | `muapi edit dance --image <url> --video <url>` | Make person dance |
 | `muapi edit dress --image <url>` | Change clothing |
 | `muapi edit clipping <video-url>` | AI highlight extraction |
+
+### `muapi run` — generic, schema-driven runner
+
+Reaches **any** model in the muapi.ai catalog by endpoint name, even ones not covered by the curated `image / video / audio / enhance / edit` verbs. The input schema is fetched from the live OpenAPI spec, so `muapi run <model> -h` always reflects the real, current parameters.
+
+| Command | Description |
+|---------|-------------|
+| `muapi run <model> -h` | Print model-specific inputs from the live OpenAPI schema |
+| `muapi run <model> -p "..."` | Run with a prompt |
+| `muapi run <model> -p "..." -i k=v -i k=v` | Pass arbitrary inputs (JSON-parsed when valid) |
+| `muapi run <model> --input-file inputs.json` | Inputs from a JSON file |
+| `muapi run <model> ... --dry-run` | Show the request body without sending |
+
+`<model>` accepts either a real endpoint slug (`flux-dev-image`, `nano-banana-2`, `seedance-2-text-to-video`) or a short alias from the curated tables (`flux-dev`, `seedream`, `kling-master`).
+
+**Merge order for inputs** (later wins): `--input-file` → `-i k=v` → `-p prompt`.
+
+```bash
+# Discover a model's real inputs
+muapi run nano-banana-2 -h
+
+# Run it
+muapi run nano-banana-2 -p "a logo for a coffee shop" -i num_images=2 --download ./out
+
+# Pipe-safe JSON
+muapi run flux-dev-image -p "..." --output-json --jq '.outputs[0]'
+```
 
 ### `muapi predict`
 | Command | Description |

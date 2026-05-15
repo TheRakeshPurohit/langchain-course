@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-muapi = "muapi.main:app"
+muapi = "muapi.main:_entrypoint"
 
 [project.optional-dependencies]
 dev     = ["pytest", "pytest-asyncio", "respx"]
