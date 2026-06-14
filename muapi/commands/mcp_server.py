@@ -15,7 +15,7 @@ from typing import Any
 
 import typer
 
-from .. import client as api_client
+from .. import __version__, client as api_client
 from ..config import get_api_key
 
 app = typer.Typer(help="Run muapi as an MCP server for AI agent integration.")
@@ -831,7 +831,7 @@ def _handle_request(request: dict) -> str:
         return _mcp_response(req_id, {
             "protocolVersion": "2025-06-18",
             "capabilities": {"tools": {"listChanged": False}},
-            "serverInfo": {"name": "muapi", "version": "0.1.0"},
+            "serverInfo": {"name": "muapi", "version": __version__},
         })
 
     if method == "tools/list":
@@ -894,7 +894,7 @@ def serve(
         )
         sys.exit(3)
 
-    sys.stderr.write(json.dumps({"status": "muapi MCP server ready", "tools": len(TOOLS), "version": "0.1.0"}) + "\n")
+    sys.stderr.write(json.dumps({"status": "muapi MCP server ready", "tools": len(TOOLS), "version": __version__}) + "\n")
     sys.stderr.flush()
 
     for line in sys.stdin:
