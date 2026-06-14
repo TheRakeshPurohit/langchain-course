@@ -360,15 +360,20 @@ TOOLS = [
         "annotations": {"readOnlyHint": True, "idempotentHint": True},
         "inputSchema": {"type": "object", "properties": {}},
         "outputSchema": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "id":           {"type": "integer"},
-                    "name":         {"type": "string"},
-                    "is_active":    {"type": "boolean"},
-                    "created_at":   {"type": "string"},
-                    "last_used_at": {"type": "string"},
+            "type": "object",
+            "properties": {
+                "keys": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id":           {"type": "integer"},
+                            "name":         {"type": "string"},
+                            "is_active":    {"type": "boolean"},
+                            "created_at":   {"type": "string"},
+                            "last_used_at": {"type": "string"},
+                        },
+                    },
                 },
             },
         },
@@ -418,7 +423,12 @@ TOOLS = [
         "endpoint": None,
         "annotations": {"readOnlyHint": True, "idempotentHint": True},
         "inputSchema": {"type": "object", "properties": {}},
-        "outputSchema": {"type": "array"},
+        "outputSchema": {
+            "type": "object",
+            "properties": {
+                "workflows": {"type": "array"},
+            },
+        },
     },
     {
         "name": "muapi_workflow_create",
@@ -658,7 +668,7 @@ def _dispatch(tool_name: str, args: dict) -> dict:
         resp = _httpx.get(f"{wf_base}/get-workflow-defs", headers={"x-api-key": key}, timeout=30.0)
         if resp.status_code >= 400:
             raise api_client.MuapiError(resp.text, resp.status_code)
-        return resp.json()
+        return {"workflows": resp.json()}
 
     if tool_name == "muapi_workflow_create":
         from ..config import BASE_URL, get_api_key
@@ -732,7 +742,7 @@ def _dispatch(tool_name: str, args: dict) -> dict:
         resp = _httpx.get(f"{BASE_URL}/keys", headers={"x-api-key": key}, timeout=30.0)
         if resp.status_code >= 400:
             raise api_client.MuapiError(resp.text, resp.status_code)
-        return resp.json()
+        return {"keys": resp.json()}
 
     if tool_name == "muapi_keys_create":
         from ..config import BASE_URL, get_api_key
