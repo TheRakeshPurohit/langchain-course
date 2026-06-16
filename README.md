@@ -1,6 +1,6 @@
 # muapi CLI
 
-Official command-line interface for [muapi.ai](https://muapi.ai) — generate images, videos, and audio directly from your terminal.
+Official command-line interface for [muapi.ai](https://muapi.ai?utm_source=github&utm_medium=readme&utm_campaign=muapi-cli) — generate images, videos, and audio directly from your terminal.
 
 **Agent-first design** — every command works for both humans (colored output, tables) and AI agents (`--output-json`, `--jq` filtering, semantic exit codes, MCP server mode).
 
